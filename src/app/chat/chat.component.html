@@ -8,7 +8,8 @@
       </li>
       <!-- conectar -->
       <li class="nav-item mx-1" *ngIf="!conectado">
-        <button type="button" class="btn btn-success" (click)="conectar()" [disabled]="!mensaje.username">Conectar</button>
+        <button type="button" class="btn btn-success" (click)="conectar()"
+          [disabled]="!mensaje.username">Conectar</button>
       </li>
       <!-- desconectar -->
       <li class="nav-item mx-1" *ngIf="conectado">
@@ -17,11 +18,17 @@
     </ul>
   </div>
 
-  <div class="card-body chat-body" *ngIf="conectado">
+  <div class="card-body chat-body" *ngIf="conectado" #scrollChat [scrollTop]="scrollChat.scrollHeight">
     <ul class="list-group list-group-flush">
       <li class="list-group-item list-group-item-light" *ngFor="let mensaje of mensajes">
-        <span *ngIf="mensaje.tipo=='NUEVO_USUARIO'">{{mensaje.fecha | date:'shortTime'}} {{mensaje.texto}}: @{{mensaje.username}}</span>
-        <span *ngIf="mensaje.tipo=='MENSAJE'">{{mensaje.fecha | date:'shortTime'}} @{{mensaje.username}} dice: <br> {{mensaje.texto}}</span>
+        <span *ngIf="mensaje.tipo=='NUEVO_USUARIO'">
+          {{mensaje.fecha | date:'shortTime'}} {{mensaje.texto}}: <span
+            [ngStyle]="{'color': mensaje.color}">@{{mensaje.username}}</span>
+        </span>
+        <span *ngIf="mensaje.tipo=='MENSAJE'">
+          {{mensaje.fecha | date:'shortTime'}} <span [ngStyle]="{'color': mensaje.color}">@{{mensaje.username}}</span>
+          dice: <br> {{mensaje.texto}}
+        </span>
       </li>
     </ul>
   </div>
@@ -30,10 +37,12 @@
     <form class="form-inline">
       <!-- texto -->
       <div class="form-group mx-1">
-        <input type="text" [(ngModel)]="mensaje.texto" class="form-control" placeholder="Escribe un mensaje..." name="texto">
+        <input type="text" [(ngModel)]="mensaje.texto" class="form-control" placeholder="Escribe un mensaje..."
+          name="texto" (keyup)="escribiendoEvento()">
       </div>
       <!-- boton enviar -->
       <button type="submit" class="btn btn-primary mx-1" (click)="enviarMensaje()">Enviar</button>
     </form>
+    <div>{{escribiendo}}</div>
   </div>
 </div>

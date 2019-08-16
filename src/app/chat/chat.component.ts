@@ -15,6 +15,7 @@ export class ChatComponent implements OnInit {
   conectado: boolean = false;
   mensaje: Mensaje = new Mensaje();
   mensajes: Mensaje[] = [];
+  escribiendo: string;
 
   constructor() { }
 
@@ -35,9 +36,21 @@ export class ChatComponent implements OnInit {
         el broker lo recibe y luego lo emite a todos los que estan subscritos a este evento */
       this.client.subscribe('/chat/mensaje', e => {
         let mensaje: Mensaje = JSON.parse(e.body) as Mensaje;
+        // fecha
         mensaje.fecha = new Date(mensaje.fecha);
+        // color del userbname
+        if (!this.mensaje.color && mensaje.tipo == 'NUEVO_USUARIO' && this.mensaje.username == mensaje.username) {
+          this.mensaje.color = mensaje.color;
+        }
+
         this.mensajes.push(mensaje);
         console.log(mensaje);
+      });
+
+      /* informo a todos los que estan subscribidos que el usuario esta escribiendo */
+      this.client.subscribe('/chat/escribiendo', e => {
+        this.escribiendo = e.body;
+        setTimeout(() => {this.escribiendo = '';}, 3000);
       });
 
       /* enviamos el username al websocket */
@@ -70,6 +83,11 @@ export class ChatComponent implements OnInit {
     this.mensaje.tipo = 'MENSAJE';
     this.client.publish({ destination: '/app/mensaje', body: JSON.stringify(this.mensaje) });
     this.mensaje.texto = '';
+  }
+
+  /* envia con publish el "username" que esta escribiendo al broker */
+  escribiendoEvento(): void {
+    this.client.publish({ destination: '/app/escribiendo', body: this.mensaje.username });
   }
 
 }
