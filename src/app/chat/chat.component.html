@@ -1,11 +1,18 @@
 <div class="card mx-2 my-2">
+
   <div class="card-header">
     <ul class="nav nav-pills card-header-pills">
+      <!-- username -->
       <li class="nav-item mx-1" *ngIf="!conectado">
-        <button type="button" class="btn btn-success btn-sm" (click)="conectar()">Conectar</button>
+        <input type="text" [(ngModel)]="mensaje.username" class="form-control" placeholder="Tu nick..." name="texto">
       </li>
+      <!-- conectar -->
+      <li class="nav-item mx-1" *ngIf="!conectado">
+        <button type="button" class="btn btn-success" (click)="conectar()" [disabled]="!mensaje.username">Conectar</button>
+      </li>
+      <!-- desconectar -->
       <li class="nav-item mx-1" *ngIf="conectado">
-        <button type="button" class="btn btn-warning btn-sm" (click)="desconectar()">Cerrar Chat</button>
+        <button type="button" class="btn btn-warning" (click)="desconectar()">Cerrar Chat</button>
       </li>
     </ul>
   </div>
@@ -13,16 +20,19 @@
   <div class="card-body chat-body" *ngIf="conectado">
     <ul class="list-group list-group-flush">
       <li class="list-group-item list-group-item-light" *ngFor="let mensaje of mensajes">
-        {{mensaje.fecha | date:'shortTime'}} : {{mensaje.texto}}
+        <span *ngIf="mensaje.tipo=='NUEVO_USUARIO'">{{mensaje.fecha | date:'shortTime'}} {{mensaje.texto}}: @{{mensaje.username}}</span>
+        <span *ngIf="mensaje.tipo=='MENSAJE'">{{mensaje.fecha | date:'shortTime'}} @{{mensaje.username}} dice: <br> {{mensaje.texto}}</span>
       </li>
     </ul>
   </div>
 
   <div class="card-footer" *ngIf="conectado">
     <form class="form-inline">
+      <!-- texto -->
       <div class="form-group mx-1">
         <input type="text" [(ngModel)]="mensaje.texto" class="form-control" placeholder="Escribe un mensaje..." name="texto">
       </div>
+      <!-- boton enviar -->
       <button type="submit" class="btn btn-primary mx-1" (click)="enviarMensaje()">Enviar</button>
     </form>
   </div>

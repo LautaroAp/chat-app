@@ -38,7 +38,12 @@ export class ChatComponent implements OnInit {
         mensaje.fecha = new Date(mensaje.fecha);
         this.mensajes.push(mensaje);
         console.log(mensaje);
-      })
+      });
+
+      /* enviamos el username al websocket */
+      this.mensaje.tipo = 'NUEVO_USUARIO';
+      this.client.publish({ destination: '/app/mensaje', body: JSON.stringify(this.mensaje) });
+
     }
 
     /* escuchar cuando con desconectamos
@@ -61,8 +66,9 @@ export class ChatComponent implements OnInit {
 
   /* destination: va el metodo del controlador del broker
     body: el objeto mensaje que contiene el texto convertido a string */
-  enviarMensaje(): void{
-    this.client.publish({destination: '/app/mensaje', body: JSON.stringify(this.mensaje)});
+  enviarMensaje(): void {
+    this.mensaje.tipo = 'MENSAJE';
+    this.client.publish({ destination: '/app/mensaje', body: JSON.stringify(this.mensaje) });
     this.mensaje.texto = '';
   }
 
